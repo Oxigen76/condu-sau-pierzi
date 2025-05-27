@@ -21,6 +21,7 @@
       padding: 2em;
       border-radius: 10px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      position: relative;
     }
     h1 {
       text-align: center;
@@ -59,63 +60,91 @@
       padding: 1em;
       border-left: 5px solid #3498db;
       background: #ecf0f1;
+      white-space: pre-wrap;
+    }
+    .status-bar {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 0.9em;
+      color: #555;
+    }
+    .restart-btn {
+      margin-top: 20px;
+      padding: 0.8em 1.2em;
+      font-size: 1em;
+      background-color: #2ecc71;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .restart-btn:hover {
+      background-color: #27ae60;
     }
   </style>
 </head>
 <body>
   <div class="container">
+    <div class="status-bar" id="status">Scor: 0 | Timp: 0s</div>
     <h1>Condu Sau Pierzi!</h1>
     <div class="image" id="image"></div>
     <div class="question" id="question">Încărcare întrebare...</div>
     <div class="options" id="options"></div>
     <div class="feedback" id="feedback"></div>
+    <button class="restart-btn" id="restart" style="display:none;" onclick="restartQuiz()">Reîncepe testul</button>
   </div>
   <script>
     const quiz = [
       {
         question: "Șoferul trece pe roșu într-o intersecție aglomerată. Ce tip de comportament este?",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Red_traffic_light.jpg/640px-Red_traffic_light.jpg",
+        image: "images/red_light.jpg",
         options: ["Dangerous Driving", "Careless Driving", "Legal"],
         answer: 0,
-        explanation: "Trecerea pe roșu într-o intersecție aglomerată este periculoasă și contravine Section 2 din Road Traffic Act 1988."
+        explanation: "Comportamentul este extrem de periculos, mai ales într-o intersecție aglomerată. Pui în pericol viața altor participanți la trafic.\\n\\\"Driving through a red traffic light can be considered dangerous driving if it presents an obvious risk to others.\\\"\\n– Road Traffic Act 1988, Section 2"
       },
       {
         question: "Schimbarea benzii fără semnalizare într-un trafic moderat.",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Car_changing_lanes_without_signal.jpg/640px-Car_changing_lanes_without_signal.jpg",
+        image: "images/no_signal.jpg",
         options: ["Dangerous Driving", "Careless Driving", "Legal"],
         answer: 1,
-        explanation: "Lipsa semnalizării este o greșeală de neatenție, încadrată ca Careless Driving."
+        explanation: "Lipsa semnalizării la schimbarea benzii este o neatenție ce poate duce la accidente.\\n\\\"Failing to signal or observe properly before changing direction is careless and inconsiderate driving.\\\"\\n– Highway Code Rule 103"
       },
       {
         question: "Depășește coloana urcând bordura și mergând pe trotuar.",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Car_on_sidewalk.jpg/640px-Car_on_sidewalk.jpg",
+        image: "images/curb_driving.jpg",
         options: ["Dangerous Driving", "Careless Driving", "Legal"],
         answer: 0,
-        explanation: "Conducerea pe trotuar implică risc pentru pietoni și este Dangerous Driving."
+        explanation: "Trecerea pe trotuar pentru a ocoli o coloană de mașini este ilegală și pune pietonii în pericol direct.\\n\\\"Driving on the pavement (footway) without lawful authority is considered dangerous.\\\"\\n– Road Traffic Act 1988, Section 2"
       },
       {
         question: "Frânează brusc în fața altui șofer din răzbunare.",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Car_braking_sharply.jpg/640px-Car_braking_sharply.jpg",
+        image: "images/brake_check.jpg",
         options: ["Dangerous Driving", "Careless Driving", "Legal"],
         answer: 0,
-        explanation: "Este un comportament agresiv și periculos, încadrat la Dangerous Driving."
+        explanation: "Frânarea bruscă din răzbunare este un act agresiv și riscant, considerat periculos de lege.\\n\\\"Sudden braking without good reason is aggressive and dangerous driving.\\\"\\n– Highway Code Rule 147, Road Traffic Act 1988, Section 2"
       },
       {
         question: "Lasă farurile stinse pe timp de noapte.",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Car_with_no_headlights_night.jpg/640px-Car_with_no_headlights_night.jpg",
+        image: "images/no_headlights.jpg",
         options: ["Dangerous Driving", "Careless Driving", "Legal"],
         answer: 0,
-        explanation: "Vizibilitatea redusă fără faruri noaptea pune în pericol participanții la trafic."
+        explanation: "Conducerea pe timp de noapte fără faruri reduce drastic vizibilitatea și este considerată periculoasă.\\n\\\"At night, headlights must be used to ensure your vehicle is visible.\\\"\\n– Highway Code Rules 113–115"
       }
     ];
 
     let current = 0;
+    let score = 0;
+    let startTime = Date.now();
     const questionEl = document.getElementById('question');
     const imageEl = document.getElementById('image');
     const optionsEl = document.getElementById('options');
     const feedbackEl = document.getElementById('feedback');
+    const statusEl = document.getElementById('status');
+    const restartBtn = document.getElementById('restart');
 
     function loadQuestion() {
+      updateStatus();
       const q = quiz[current];
       questionEl.textContent = q.question;
       imageEl.innerHTML = `<img src="${q.image}" alt="Imagine întrebării">`;
@@ -129,24 +158,41 @@
       });
     }
 
+    function updateStatus() {
+      const elapsed = Math.floor((Date.now() - startTime) / 1000);
+      statusEl.textContent = `Scor: ${score} | Timp: ${elapsed}s`;
+    }
+
     function handleAnswer(selected) {
       const q = quiz[current];
       if (selected === q.answer) {
-        feedbackEl.textContent = "Corect! " + q.explanation;
+        score++;
+        feedbackEl.textContent = "✅ Corect!\\n" + q.explanation;
       } else {
-        feedbackEl.textContent = "Greșit. " + q.explanation;
+        feedbackEl.textContent = "❌ Greșit.\\n" + q.explanation;
       }
       current++;
+      updateStatus();
       if (current < quiz.length) {
-        setTimeout(loadQuestion, 2500);
+        setTimeout(loadQuestion, 3500);
       } else {
         setTimeout(() => {
+          const elapsed = Math.floor((Date.now() - startTime) / 1000);
           questionEl.textContent = "Ai terminat testul!";
           imageEl.innerHTML = '';
           optionsEl.innerHTML = '';
-          feedbackEl.textContent += "\\nMulțumim că ai jucat!";
-        }, 2500);
+          feedbackEl.textContent += `\\n\\nScor final: ${score}/${quiz.length}\\nTimp total: ${elapsed} secunde\\nMulțumim că ai jucat!`;
+          restartBtn.style.display = 'block';
+        }, 3500);
       }
+    }
+
+    function restartQuiz() {
+      current = 0;
+      score = 0;
+      startTime = Date.now();
+      restartBtn.style.display = 'none';
+      loadQuestion();
     }
 
     loadQuestion();
