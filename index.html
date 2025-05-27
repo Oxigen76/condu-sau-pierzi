@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Condu Sau Pierzi!</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f4f8;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .container {
+      max-width: 600px;
+      background: white;
+      margin: 2em;
+      padding: 2em;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+    }
+    .question {
+      margin: 1em 0;
+      font-size: 1.2em;
+    }
+    .image {
+      margin-bottom: 1em;
+      text-align: center;
+    }
+    .image img {
+      max-width: 100%;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+    .options button {
+      display: block;
+      margin: 0.5em 0;
+      width: 100%;
+      padding: 1em;
+      font-size: 1em;
+      border: none;
+      border-radius: 5px;
+      background: #3498db;
+      color: white;
+      cursor: pointer;
+    }
+    .options button:hover {
+      background: #2980b9;
+    }
+    .feedback {
+      margin-top: 1em;
+      padding: 1em;
+      border-left: 5px solid #3498db;
+      background: #ecf0f1;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Condu Sau Pierzi!</h1>
+    <div class="image" id="image"></div>
+    <div class="question" id="question">Încărcare întrebare...</div>
+    <div class="options" id="options"></div>
+    <div class="feedback" id="feedback"></div>
+  </div>
+  <script>
+    const quiz = [
+      {
+        question: "Șoferul trece pe roșu într-o intersecție aglomerată. Ce tip de comportament este?",
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Red_traffic_light.jpg/640px-Red_traffic_light.jpg",
+        options: ["Dangerous Driving", "Careless Driving", "Legal"],
+        answer: 0,
+        explanation: "Trecerea pe roșu într-o intersecție aglomerată este periculoasă și contravine Section 2 din Road Traffic Act 1988."
+      },
+      {
+        question: "Schimbarea benzii fără semnalizare într-un trafic moderat.",
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Car_changing_lanes_without_signal.jpg/640px-Car_changing_lanes_without_signal.jpg",
+        options: ["Dangerous Driving", "Careless Driving", "Legal"],
+        answer: 1,
+        explanation: "Lipsa semnalizării este o greșeală de neatenție, încadrată ca Careless Driving."
+      },
+      {
+        question: "Depășește coloana urcând bordura și mergând pe trotuar.",
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Car_on_sidewalk.jpg/640px-Car_on_sidewalk.jpg",
+        options: ["Dangerous Driving", "Careless Driving", "Legal"],
+        answer: 0,
+        explanation: "Conducerea pe trotuar implică risc pentru pietoni și este Dangerous Driving."
+      },
+      {
+        question: "Frânează brusc în fața altui șofer din răzbunare.",
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Car_braking_sharply.jpg/640px-Car_braking_sharply.jpg",
+        options: ["Dangerous Driving", "Careless Driving", "Legal"],
+        answer: 0,
+        explanation: "Este un comportament agresiv și periculos, încadrat la Dangerous Driving."
+      },
+      {
+        question: "Lasă farurile stinse pe timp de noapte.",
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Car_with_no_headlights_night.jpg/640px-Car_with_no_headlights_night.jpg",
+        options: ["Dangerous Driving", "Careless Driving", "Legal"],
+        answer: 0,
+        explanation: "Vizibilitatea redusă fără faruri noaptea pune în pericol participanții la trafic."
+      }
+    ];
+
+    let current = 0;
+    const questionEl = document.getElementById('question');
+    const imageEl = document.getElementById('image');
+    const optionsEl = document.getElementById('options');
+    const feedbackEl = document.getElementById('feedback');
+
+    function loadQuestion() {
+      const q = quiz[current];
+      questionEl.textContent = q.question;
+      imageEl.innerHTML = `<img src="${q.image}" alt="Imagine întrebării">`;
+      optionsEl.innerHTML = '';
+      feedbackEl.textContent = '';
+      q.options.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.textContent = opt;
+        btn.onclick = () => handleAnswer(idx);
+        optionsEl.appendChild(btn);
+      });
+    }
+
+    function handleAnswer(selected) {
+      const q = quiz[current];
+      if (selected === q.answer) {
+        feedbackEl.textContent = "Corect! " + q.explanation;
+      } else {
+        feedbackEl.textContent = "Greșit. " + q.explanation;
+      }
+      current++;
+      if (current < quiz.length) {
+        setTimeout(loadQuestion, 2500);
+      } else {
+        setTimeout(() => {
+          questionEl.textContent = "Ai terminat testul!";
+          imageEl.innerHTML = '';
+          optionsEl.innerHTML = '';
+          feedbackEl.textContent += "\\nMulțumim că ai jucat!";
+        }, 2500);
+      }
+    }
+
+    loadQuestion();
+  </script>
+</body>
+</html>
