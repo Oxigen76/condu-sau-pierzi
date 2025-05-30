@@ -1,201 +1,1042 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Condu Sau Pierzi!</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f0f4f8;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .container {
-      max-width: 600px;
-      background: white;
-      margin: 2em;
-      padding: 2em;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      position: relative;
-    }
-    h1 {
-      text-align: center;
-      color: #2c3e50;
-    }
-    .question {
-      margin: 1em 0;
-      font-size: 1.2em;
-    }
-    .image {
-      margin-bottom: 1em;
-      text-align: center;
-    }
-    .image img {
-      max-width: 100%;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-    }
-    .options button {
-      display: block;
-      margin: 0.5em 0;
-      width: 100%;
-      padding: 1em;
-      font-size: 1em;
-      border: none;
-      border-radius: 5px;
-      background: #3498db;
-      color: white;
-      cursor: pointer;
-    }
-    .options button:hover {
-      background: #2980b9;
-    }
-    .feedback {
-      margin-top: 1em;
-      padding: 1em;
-      border-left: 5px solid #3498db;
-      background: #ecf0f1;
-      white-space: pre-wrap;
-    }
-    .status-bar {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      font-size: 0.9em;
-      color: #555;
-    }
-    .restart-btn {
-      margin-top: 20px;
-      padding: 0.8em 1.2em;
-      font-size: 1em;
-      background-color: #2ecc71;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    .restart-btn:hover {
-      background-color: #27ae60;
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Condu Sau Pierzi! (v6 - UX)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', Arial, sans-serif; /* Font nou */
+            background: #f0f4f8;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .name-entry-section, .container {
+            max-width: 600px;
+            background: white;
+            padding: 2em;
+            border-radius: 12px; /* Colțuri mai rotunjite */
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1); /* Umbră mai pronunțată */
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+        }
+        .container {
+            position: relative; 
+        }
+        h1, h2 {
+            text-align: center;
+            color: #2c3e50;
+        }
+        h1 { font-weight: 700; }
+        h2 { font-weight: 600; }
+
+        label {
+            display: block;
+            margin-bottom: 0.5em;
+            color: #34495e;
+            font-weight: 600; /* Mai bold */
+        }
+        input[type="text"] {
+            width: calc(100% - 24px); /* Ajustat pentru padding */
+            padding: 12px; /* Padding mai mare */
+            margin-bottom: 1em;
+            border: 1px solid #dcdfe6; /* Chenar mai subtil */
+            border-radius: 6px;
+            font-size: 1em;
+            font-family: 'Poppins', sans-serif;
+        }
+        .start-btn-style {
+            display: block;
+            width: 100%;
+            padding: 0.9em 1.5em; /* Padding ajustat */
+            font-size: 1.1em;
+            font-weight: 600;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: background 0.2s ease, transform 0.1s ease;
+            background-color: #27ae60; 
+        }
+        .start-btn-style:hover {
+            background-color: #229954;
+            transform: translateY(-2px);
+        }
+        
+        /* Bara de progres */
+        .progress-bar-container {
+            width: 100%;
+            height: 10px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            width: 0%;
+            height: 100%;
+            background-color: #3498db;
+            border-radius: 5px;
+            transition: width 0.3s ease-in-out;
+        }
+
+        .question-progress {
+            text-align: center;
+            font-size: 0.9em;
+            color: #7f8c8d;
+            margin-bottom: 1em;
+        }
+        #question-timer-display {
+            text-align: center;
+            font-size: 1.1em;
+            color: #e67e22;
+            font-weight: bold;
+            margin-bottom: 1em;
+            height: 1.5em; 
+        }
+        .question {
+            margin: 1em 0;
+            font-size: 1.25em; /* Ușor mărit */
+            font-weight: 500;
+            color: #34495e;
+            line-height: 1.5;
+        }
+        .image {
+            margin-bottom: 1em;
+            text-align: center;
+        }
+        .image img {
+            max-width: 100%;
+            max-height: 250px; 
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            background-color: #e0e0e0;
+            min-height: 150px; 
+        }
+        .options button {
+            display: flex; /* Pentru aliniere iconiță */
+            align-items: center;
+            justify-content: space-between; /* Spațiu între text și iconiță */
+            margin: 0.6em 0; /* Spațiere ajustată */
+            width: 100%;
+            padding: 0.9em 1.2em; /* Padding ajustat */
+            font-size: 1em;
+            font-weight: 500;
+            border: 1px solid #dcdfe6;
+            border-radius: 8px;
+            background: #ffffff; /* Fundal alb pentru butoane */
+            color: #34495e; /* Text mai închis */
+            cursor: pointer;
+            transition: all 0.2s ease; /* Tranzitie generală */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .options button:hover:not(:disabled) {
+            background: #f8f9fa;
+            border-color: #adb5bd;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.07);
+        }
+        .options button:disabled {
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+        .options button .answer-icon { /* Stilizare iconiță */
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .options button.correct {
+            background: #d1fae5; 
+            border-color: #2ecc71;
+            color: #065f46;
+        }
+        .options button.correct .answer-icon { color: #2ecc71; }
+
+        .options button.incorrect {
+            background: #fee2e2; 
+            border-color: #e74c3c;
+            color: #991b1b;
+        }
+        .options button.incorrect .answer-icon { color: #e74c3c; }
+
+        .feedback {
+            margin-top: 1em;
+            padding: 1em;
+            border-left: 5px solid #3498db;
+            background: #ecf0f1;
+            white-space: pre-wrap; 
+            font-size: 0.9em;
+            color: #333;
+            text-align: center; 
+            border-radius: 0 8px 8px 0;
+        }
+        .feedback img { 
+            display:block; margin:0 auto 10px; max-width: 150px;
+        }
+        .feedback.correct {
+            border-left-color: #2ecc71;
+        }
+        .feedback.incorrect {
+            border-left-color: #e74c3c;
+        }
+        .status-bar {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 0.9em;
+            color: #555;
+            background: #e9ecef; /* Fundal mai deschis */
+            padding: 6px 12px; /* Padding ajustat */
+            border-radius: 6px;
+        }
+        .control-btn, .next-btn, .restart-btn, .action-btn { 
+            display: inline-block; 
+            margin: 10px 5px 0;
+            padding: 0.8em 1.2em; 
+            font-size: 0.95em; 
+            font-weight: 600;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: background 0.2s ease, transform 0.1s ease;
+            min-width: 100px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .control-btn:hover, .next-btn:hover, .restart-btn:hover, .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+       .next-btn {
+            background-color: #3498db; 
+        }
+        .next-btn:hover {
+            background-color: #2980b9;
+        }
+        .restart-btn {
+            background-color: #2ecc71; 
+        }
+        .restart-btn:hover {
+            background-color: #27ae60;
+        }
+        .action-btn.accept {
+            background-color: #3498db; 
+        }
+        .action-btn.accept:hover {
+            background-color: #2980b9;
+        }
+        .action-btn.decline {
+            background-color: #95a5a6; 
+        }
+        .action-btn.decline:hover {
+            background-color: #7f8c8d;
+        }
+        #pause-resume-btn { background-color: #f39c12; } 
+        #pause-resume-btn:hover { background-color: #e67e22; }
+        #stop-quiz-btn { background-color: #e74c3c; } 
+        #stop-quiz-btn:hover { background-color: #c0392b; }
+
+        .button-group { 
+            text-align: center;
+            margin-top: 10px;
+        }
+        .timer-controls-group { 
+            border-top: 1px solid #e9ecef; /* Linie separatoare mai subtilă */
+            padding-top: 10px;
+            margin-top: 15px;
+            position: relative; 
+            z-index: 11;      
+        }
+
+        .info-section { 
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #fff9e6; 
+            border: 1px solid #ffe082; 
+            border-radius: 8px;
+        }
+        .info-section h3, .info-section h4 {
+            color: #5d4037; 
+            margin-top: 0;
+        }
+        .info-section p {
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+        .info-section table {
+            width: 100%;
+            margin-top: 15px;
+            border-collapse: collapse;
+            font-size: 0.9em;
+        }
+        .info-section th, .info-section td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .info-section th {
+            background-color: #f2f2f2;
+        }
+        .incorrect-answer-review-item {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #ccc;
+        }
+        .incorrect-answer-review-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        .incorrect-answer-review-item p {
+            margin: 5px 0;
+        }
+        .quiz-overlay { 
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.85); /* Opacitate mai mare */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2em;
+            color: #34495e;
+            font-weight: bold;
+            z-index: 10; 
+            border-radius: 12px; /* Pentru a se potrivi cu containerul */
+        }
+
+        /* Custom Modal */
+        .custom-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: none; /* Ascuns inițial */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .custom-modal {
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+        .custom-modal h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        .custom-modal p {
+            margin-bottom: 20px;
+            color: #34495e;
+            font-size: 1em;
+        }
+        .custom-modal-buttons button {
+            padding: 10px 20px;
+            margin: 0 10px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .custom-modal-buttons .confirm-btn {
+            background-color: #e74c3c; /* Roșu pentru confirmare oprire */
+            color: white;
+        }
+        .custom-modal-buttons .confirm-btn:hover { background-color: #c0392b; }
+        .custom-modal-buttons .cancel-btn {
+            background-color: #bdc3c7; /* Gri pentru anulare */
+            color: #2c3e50;
+        }
+        .custom-modal-buttons .cancel-btn:hover { background-color: #95a5a6; }
+
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .name-entry-section, .container {
+                margin: 1em;
+                padding: 1.5em; /* Ajustat padding */
+            }
+            h1 {
+                font-size: 1.5em;
+            }
+            .info-section table {
+                font-size: 0.8em;
+            }
+            .control-btn, .next-btn, .restart-btn, .action-btn {
+                display: block; 
+                width: 100%;
+                margin-left: 0;
+                margin-right: 0;
+                margin-bottom: 8px; /* Spațiere butoane pe mobil */
+            }
+            .button-group {
+                display: flex;
+                flex-direction: column;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <div class="status-bar" id="status">Scor: 0 | Timp: 0s</div>
-    <h1>Condu Sau Pierzi!</h1>
-    <div class="image" id="image"></div>
-    <div class="question" id="question">Încărcare întrebare...</div>
-    <div class="options" id="options"></div>
-    <div class="feedback" id="feedback"></div>
-    <button class="restart-btn" id="restart" style="display:none;" onclick="restartQuiz()">Reîncepe testul</button>
-  </div>
-  <script>
-    const quiz = [
-      {
-        question: "Șoferul trece pe roșu într-o intersecție aglomerată. Ce tip de comportament este?",
-        image: "images/red_light.jpg",
-        options: ["Dangerous Driving", "Careless Driving", "Legal"],
-        answer: 0,
-        explanation: "Comportamentul este extrem de periculos, mai ales într-o intersecție aglomerată. Pui în pericol viața altor participanți la trafic.\\n\\\"Driving through a red traffic light can be considered dangerous driving if it presents an obvious risk to others.\\\"\\n– Road Traffic Act 1988, Section 2"
-      },
-      {
-        question: "Schimbarea benzii fără semnalizare într-un trafic moderat.",
-        image: "images/no_signal.jpg",
-        options: ["Dangerous Driving", "Careless Driving", "Legal"],
-        answer: 1,
-        explanation: "Lipsa semnalizării la schimbarea benzii este o neatenție ce poate duce la accidente.\\n\\\"Failing to signal or observe properly before changing direction is careless and inconsiderate driving.\\\"\\n– Highway Code Rule 103"
-      },
-      {
-        question: "Depășește coloana urcând bordura și mergând pe trotuar.",
-        image: "images/curb_driving.jpg",
-        options: ["Dangerous Driving", "Careless Driving", "Legal"],
-        answer: 0,
-        explanation: "Trecerea pe trotuar pentru a ocoli o coloană de mașini este ilegală și pune pietonii în pericol direct.\\n\\\"Driving on the pavement (footway) without lawful authority is considered dangerous.\\\"\\n– Road Traffic Act 1988, Section 2"
-      },
-      {
-        question: "Frânează brusc în fața altui șofer din răzbunare.",
-        image: "images/brake_check.jpg",
-        options: ["Dangerous Driving", "Careless Driving", "Legal"],
-        answer: 0,
-        explanation: "Frânarea bruscă din răzbunare este un act agresiv și riscant, considerat periculos de lege.\\n\\\"Sudden braking without good reason is aggressive and dangerous driving.\\\"\\n– Highway Code Rule 147, Road Traffic Act 1988, Section 2"
-      },
-      {
-        question: "Lasă farurile stinse pe timp de noapte.",
-        image: "images/no_headlights.jpg",
-        options: ["Dangerous Driving", "Careless Driving", "Legal"],
-        answer: 0,
-        explanation: "Conducerea pe timp de noapte fără faruri reduce drastic vizibilitatea și este considerată periculoasă.\\n\\\"At night, headlights must be used to ensure your vehicle is visible.\\\"\\n– Highway Code Rules 113–115"
-      }
-    ];
+    <div id="name-entry-section" class="name-entry-section">
+        <h2>Bine ai venit la "Condu Sau Pierzi!"</h2>
+        <label for="name-input">Introdu numele tău:</label>
+        <input type="text" id="name-input" placeholder="Ex: Ion Popescu">
+        <button id="start-quiz-button" class="start-btn-style">Începe Testul</button>
+    </div>
 
-    let current = 0;
-    let score = 0;
-    let startTime = Date.now();
-    const questionEl = document.getElementById('question');
-    const imageEl = document.getElementById('image');
-    const optionsEl = document.getElementById('options');
-    const feedbackEl = document.getElementById('feedback');
-    const statusEl = document.getElementById('status');
-    const restartBtn = document.getElementById('restart');
+    <div class="container" id="quiz-main-container" style="display:none;">
+        <div id="quiz-pause-overlay" class="quiz-overlay" style="display:none;">PAUZĂ</div>
+        <div class="status-bar" id="status">Scor: 0 | Timp: 0s</div>
+        <h1 id="quiz-title">Condu Sau Pierzi!</h1>
+        
+        <div class="progress-bar-container">
+            <div id="progress-bar-fill" class="progress-bar-fill"></div>
+        </div>
+        <div id="question-timer-display" style="display:none;"></div>
+        <div id="question-progress" class="question-progress"></div>
 
-    function loadQuestion() {
-      updateStatus();
-      const q = quiz[current];
-      questionEl.textContent = q.question;
-      imageEl.innerHTML = `<img src="${q.image}" alt="Imagine întrebării">`;
-      optionsEl.innerHTML = '';
-      feedbackEl.textContent = '';
-      q.options.forEach((opt, idx) => {
-        const btn = document.createElement('button');
-        btn.textContent = opt;
-        btn.onclick = () => handleAnswer(idx);
-        optionsEl.appendChild(btn);
-      });
-    }
+        <div class="image" id="image"></div>
+        <div class="question" id="question">Încărcare întrebare...</div>
+        <div class="options" id="options"></div>
+        <div class="feedback" id="feedback" style="display:none;"></div>
+        
+        <div id="general-recap" class="info-section" style="display:none;">
+            <h3>Recapitulare: Conducere Periculoasă vs. Neglijentă</h3>
+            <p>
+                <strong>Conducerea Periculoasă (Dangerous Driving)</strong> implică un stil de condus care este <strong>mult sub</strong> standardul unui șofer competent ȘI creează un <strong>pericol evident</strong>.
+            </p>
+            <p>
+                <strong>Conducerea Neglijentă (Careless Driving)</strong> se referă la un stil de condus care este <strong>sub</strong> standardul unui șofer competent, fără a atinge neapărat nivelul de pericol evident al conducerii periculoase.
+            </p>
+            <h4>Tabel Comparativ</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Caracteristică</th>
+                        <th>Conducere Periculoasă</th>
+                        <th>Conducere Neglijentă</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Standardul de condus</td>
+                        <td>Mult sub cel acceptabil</td>
+                        <td>Sub cel acceptabil</td>
+                    </tr>
+                    <tr>
+                        <td>Pericol</td>
+                        <td>Evident și semnificativ</td>
+                        <td>Mai puțin evident sau minor</td>
+                    </tr>
+                    <tr>
+                        <td>Gravitate</td>
+                        <td>Majoră</td>
+                        <td>Minoră / Moderată</td>
+                    </tr>
+                    <tr>
+                        <td>Consecințe tipice (UK)</td>
+                        <td>Amenzi mari, puncte multe, suspendare/anulare permis, posibil închisoare</td>
+                        <td>Amenzi, puncte, cursuri de conștientizare</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
-    function updateStatus() {
-      const elapsed = Math.floor((Date.now() - startTime) / 1000);
-      statusEl.textContent = `Scor: ${score} | Timp: ${elapsed}s`;
-    }
+        <div id="incorrect-answers-review" class="info-section" style="display:none;">
+            <h3>Revizuirea Răspunsurilor Greșite</h3>
+        </div>
+        
+        <div id="time-trial-proposal" style="display:none; text-align:center; margin-top:20px;">
+            <p>Dorești să accepți provocarea contratimp?</p>
+            <div class="button-group">
+                <button id="accept-time-trial" class="action-btn accept">Acceptă Provocarea</button>
+                <button id="decline-time-trial" class="action-btn decline">Nu, mulțumesc</button>
+            </div>
+        </div>
 
-    function handleAnswer(selected) {
-      const q = quiz[current];
-      if (selected === q.answer) {
-        score++;
-        feedbackEl.textContent = "✅ Corect!\\n" + q.explanation;
-      } else {
-        feedbackEl.textContent = "❌ Greșit.\\n" + q.explanation;
-      }
-      current++;
-      updateStatus();
-      if (current < quiz.length) {
-        setTimeout(loadQuestion, 3500);
-      } else {
-        setTimeout(() => {
-          const elapsed = Math.floor((Date.now() - startTime) / 1000);
-          questionEl.textContent = "Ai terminat testul!";
-          imageEl.innerHTML = '';
-          optionsEl.innerHTML = '';
-          feedbackEl.textContent += `\\n\\nScor final: ${score}/${quiz.length}\\nTimp total: ${elapsed} secunde\\nMulțumim că ai jucat!`;
-          restartBtn.style.display = 'block';
-        }, 3500);
-      }
-    }
+        <div class="button-group timer-controls-group" id="in-quiz-controls" style="display:none;">
+             <button id="pause-resume-btn" class="control-btn">Pauză Timer</button>
+             <button id="stop-quiz-btn" class="control-btn">Oprește Testul</button>
+        </div>
 
-    function restartQuiz() {
-      current = 0;
-      score = 0;
-      startTime = Date.now();
-      restartBtn.style.display = 'none';
-      loadQuestion();
-    }
+        <div class="button-group">
+            <button class="next-btn" id="next" style="display:none;">Următoarea</button>
+            <button class="restart-btn" id="restart" style="display:none;">Reîncepe Testul</button>
+        </div>
+    </div>
 
-    loadQuestion();
-  </script>
+    <div id="stop-confirm-modal-overlay" class="custom-modal-overlay">
+        <div class="custom-modal">
+            <h3>Confirmare Oprire Test</h3>
+            <p>Ești sigur că vrei să oprești testul curent? Progresul va fi pierdut și vei reveni la ecranul de start.</p>
+            <div class="custom-modal-buttons">
+                <button id="confirm-stop-btn" class="confirm-btn">Da, Oprește</button>
+                <button id="cancel-stop-btn" class="cancel-btn">Anulează</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        const allQuestions = [
+            // ... (cele 20 de întrebări complete, la fel ca în versiunea anterioară corectată) ...
+            { id: 1, question: "Șoferul trece pe roșu într-o intersecție aglomerată. Ce tip de comportament este?", image: "https://placehold.co/600x300/FF0000/FFFFFF?text=Stop+Ignorat", options: ["Conducere Periculoasă", "Conducere Neglijentă", "Legal"], answer: 0, explanation: "Trecerea pe roșu într-o intersecție aglomerată pune în pericol direct viața altora și este considerată conducere periculoasă.\nReferință Cod Rutier UK: Road Traffic Act 1988, Section 2 (Dangerous Driving) or Section 3 (Careless, or Inconsiderate, Driving) depending on circumstances. Contravening traffic signals is an offence under TSRGD 2016." },
+            { id: 2, question: "Schimbarea benzii fără semnalizare într-un trafic moderat.", image: "https://placehold.co/600x300/FFA500/000000?text=Fără+Semnalizare", options: ["Conducere Periculoasă", "Conducere Neglijentă", "Legal"], answer: 1, explanation: "Lipsa semnalizării este o neatenție care poate duce la accidente, fiind încadrată ca o conducere neglijentă (fără atenția cuvenită).\nReferință Cod Rutier UK: Highway Code, Rule 103. Can fall under Road Traffic Act 1988, Section 3 (Careless, or Inconsiderate, Driving)." },
+            { id: 3, question: "Depășește coloana urcând bordura și mergând pe trotuar.", image: "https://placehold.co/600x300/A52A2A/FFFFFF?text=Mers+pe+Trotuar", options: ["Conducere Periculoasă", "Conducere Neglijentă", "Legal"], answer: 0, explanation: "Conducerea pe trotuar este extrem de periculoasă, punând în pericol pietonii. Este o formă gravă de conducere periculoasă.\nReferință Cod Rutier UK: Highway Code, Rule 145. Offence under Section 72 of the Highway Act 1835 or Road Traffic Act 1988, Section 2 (Dangerous Driving)." },
+            { id: 4, question: "Frânează brusc în fața altui șofer din răzbunare (brake check).", image: "https://placehold.co/600x300/8B0000/FFFFFF?text=Brake+Check", options: ["Conducere Periculoasă", "Conducere Neglijentă", "Legal"], answer: 0, explanation: "Frânarea bruscă intenționată este un act de agresiune rutieră ('road rage') și constituie conducere periculoasă.\nReferință Cod Rutier UK: Road Traffic Act 1988, Section 2 (Dangerous Driving). Also see Highway Code, Rule 147." },
+            { id: 5, question: "Lasă farurile stinse pe timp de noapte.", image: "https://placehold.co/600x300/778899/FFFFFF?text=Fără+Faruri+Noaptea", options: ["Conducere Periculoasă", "Conducere Neglijentă", "Legal"], answer: 0, explanation: "Conducerea fără faruri noaptea reduce drastic vizibilitatea și te face invizibil pentru alții, fiind un act de conducere periculoasă.\nReferință Cod Rutier UK: The Road Vehicles Lighting Regulations 1989. Can be considered under Road Traffic Act 1988, Section 2 or 3." },
+            { id: 6, question: "Verifică un mesaj pe telefon în timp ce așteaptă la semafor.", image: "https://placehold.co/600x300/FFD700/000000?text=Telefon+la+Semafor", options: ["Conducere Periculoasă", "Conducere Neglijentă", "Legal (dar nerecomandat)"], answer: 1, explanation: "Chiar și la semafor, folosirea telefonului ținut în mână este o infracțiune specifică (S41D RTA 1988), distrage atenția și este considerată conducere neglijentă (fără atenția cuvenită).\nReferință Cod Rutier UK: Road Traffic Act 1988, Section 41D (using a hand-held mobile phone/device while driving). Can also be Section 3 (Careless Driving)." },
+            { id: 7, question: "Merge cu 40 mph într-o zonă unde limita este 30 mph.", image: "https://placehold.co/600x300/4682B4/FFFFFF?text=Viteză+Depășită+(mph)", options: ["Conducere Periculoasă", "Conducere Neglijentă", "Legal"], answer: 1, explanation: "Depășirea ușoară a vitezei (ex. 40 mph în zonă de 30 mph) este, de obicei, considerată conducere neglijentă, deoarece nu respectă standardul unui șofer atent.\nReferință Cod Rutier UK: Road Traffic Regulation Act 1984. Can be Section 3 of RTA 1988 (Careless Driving)." },
+            { id: 8, question: "Conduce sub limita de viteză pe banda de depășire a autostrăzii, blocând traficul.", image: "https://placehold.co/600x300/B0C4DE/000000?text=Blocare+Bandă+Depășire", options: ["Conducere Periculoasă", "Conducere Neglijentă", "Legal"], answer: 1, explanation: "Mersul incorect pe banda de depășire denotă lipsă de atenție și considerație, fiind o formă de conducere neglijentă.\nReferință Cod Rutier UK: Highway Code, Rule 264 (lane discipline). Can be Section 3 of RTA 1988 (Inconsiderate Driving)." },
+            { id: 9, question: "Face o întoarcere pe autostradă folosind spațiul median.", image: "https://placehold.co/600x300/DC143C/FFFFFF?text=Întoarcere+Autostradă", options: ["Conducere Periculoasă", "Conducere Neglijentă", "Legal"], answer: 0, explanation: "Întoarcerea pe autostradă este extrem de periculoasă și strict interzisă, reprezentând o conducere periculoasă majoră.\nReferință Cod Rutier UK: Motorways Traffic (England and Wales) Regulations 1982. Clearly Section 2 of RTA 1988 (Dangerous Driving)." },
+            { id: 10, question: "Mănâncă un sandviș în timp ce conduce pe un drum liber.", image: "https://placehold.co/600x300/F0E68C/000000?text=Mâncat+la+Volan", options: ["Conducere Periculoasă", "Conducere Neglijentă", "Legal"], answer: 1, explanation: "Deși poate părea inofensiv, mâncatul la volan este o distragere și reduce controlul, fiind considerat conducere neglijentă.\nReferință Cod Rutier UK: Highway Code, Rule 148 (safe driving and riding needs concentration). Can be Section 3 of RTA 1988 (Careless Driving)." },
+            { id: 11, question: "Șoferul depășește pe linie continuă într-o curbă fără vizibilitate.", image: "https://placehold.co/600x300/FF4500/FFFFFF?text=Depășire+Periculoasă", options: ["Conducere Periculoasă", "Conducere Neglijentă", "Legal"], answer: 0, explanation: "Depășirea pe linie continuă într-o curbă fără vizibilitate este un act de conducere extrem de periculos, ignorând riscul iminent de coliziune frontală.\nReferință Cod Rutier UK: Highway Code, Rule 129. Clearly Section 2 of RTA 1988 (Dangerous Driving)." },
+            { id: 12, question: "Nu acordă prioritate pietonilor la o trecere semnalizată corespunzător.", image: "https://placehold.co/600x300/6A5ACD/FFFFFF?text=Neacordare+Pietoni", options: ["Conducere Periculoasă", "Conducere Neglijentă", "Legal"], answer: 1, explanation: "Neacordarea priorității pietonilor la trecerile semnalizate este o lipsă de atenție și poate fi considerată conducere neglijentă sau chiar periculoasă, în funcție de riscul creat.\nReferință Cod Rutier UK: Highway Code, Rules 195-199. Can be Section 3 of RTA 1988." },
+            { id: 13, question: "Folosește claxonul în mod excesiv și nejustificat într-o zonă rezidențială noaptea.", image: "https://placehold.co/600x300/FF8C00/000000?text=Claxon+Excesiv", options: ["Conducere Periculoasă", "Conducere Neglijentă", "Legal"], answer: 1, explanation: "Folosirea excesivă și nejustificată a claxonului, mai ales noaptea în zone rezidențiale, este o formă de conducere lipsită de considerație (neglijentă).\nReferință Cod Rutier UK: Highway Code, Rule 112. Can be Section 3 of RTA 1988 (Inconsiderate Driving)." },
+            { id: 14, question: "Conduce un vehicul supraîncărcat, cu vizibilitatea spre spate blocată.", image: "https://placehold.co/600x300/D2691E/FFFFFF?text=Supraîncărcat", options: ["Conducere Periculoasă", "Conducere Neglijentă", "Legal"], answer: 0, explanation: "Conducerea unui vehicul supraîncărcat, care afectează stabilitatea sau blochează vizibilitatea, este periculoasă.\nReferință Cod Rutier UK: Road Vehicles (Construction and Use) Regulations 1986. Can be Section 2 of RTA 1988 (Dangerous Driving)." },
+            { id: 15, question: "Ignoră semnalul \"Stop\" și intră în intersecție fără a opri complet.", image: "https://placehold.co/600x300/B22222/FFFFFF?text=Ignorare+Stop", options: ["Conducere Periculoasă", "Conducere Neglijentă", "Legal"], answer: 0, explanation: "Ignorarea semnului \"Stop\" este o abatere gravă și periculoasă, deoarece indică o intersecție cu risc ridicat.\nReferință Cod Rutier UK: TSRGD 2016. Can be Section 2 or 3 of RTA 1988." },
+            { id: 16, question: "Parchează pe o trecere de pietoni.", image: "https://placehold.co/600x300/808080/FFFFFF?text=Parcare+Trecere", options: ["Conducere Periculoasă", "Conducere Neglijentă", "Ilegal (Contraventie Parcare)"], answer: 1, explanation: "Parcarea pe o trecere de pietoni (sau pe marcajele zigzag) este în primul rând o contravenție specifică de parcare (Highway Code Rule 243). Demonstrează lipsă de considerație și poate fi încadrată ca o formă de conducere neglijentă (Inconsiderate Driving), mai ales dacă manevra a fost efectuată fără atenție.\nReferință Cod Rutier UK: Highway Code, Rule 243; specific parking regulations. Can be viewed under Section 3 of RTA 1988 (Inconsiderate Driving)." },
+            { id: 17, question: "Participă la o cursă ilegală de mașini pe drumurile publice.", image: "https://placehold.co/600x300/00008B/FFFFFF?text=Cursă+Ilegală", options: ["Conducere Periculoasă", "Conducere Neglijentă", "Legal"], answer: 0, explanation: "Participarea la curse ilegale pe drumurile publice este o formă extremă de conducere periculoasă, cu risc major pentru toți participanții la trafic.\nReferință Cod Rutier UK: Road Traffic Act 1988, Section 2 (Dangerous Driving) and specific offences for racing." },
+            { id: 18, question: "Șoferul este vizibil obosit, cască frecvent și are dificultăți în a menține banda.", image: "https://placehold.co/600x300/ADD8E6/000000?text=Șofer+Obosit", options: ["Conducere Periculoasă", "Conducere Neglijentă", "Legal"], answer: 0, explanation: "Conducerea în stare de oboseală extremă afectează grav capacitatea de reacție și poate duce la conducere periculoasă.\nReferință Cod Rutier UK: Highway Code, Rule 91. Can be Section 2 or 3 of RTA 1988." },
+            { id: 19, question: "Nu adaptează viteza la condiții de ceață densă, mergând cu viteza maximă admisă pe sectorul de drum.", image: "https://placehold.co/600x300/708090/FFFFFF?text=Viteză+Ceață", options: ["Conducere Periculoasă", "Conducere Neglijentă", "Legal"], answer: 0, explanation: "Neadaptarea vitezei la condiții de vizibilitate redusă, cum ar fi ceața densă, este o conducere periculoasă, deoarece riscul de accident este foarte mare.\nReferință Cod Rutier UK: Highway Code, Rule 235. Can be Section 2 of RTA 1988." },
+            { id: 20, question: "Aruncă gunoi pe geamul mașinii în timp ce conduce.", image: "https://placehold.co/600x300/90EE90/000000?text=Aruncat+Gunoi", options: ["Conducere Periculoasă", "Conducere Neglijentă", "Ilegal (Poluare)"], answer: 1, explanation: "Aruncarea gunoiului pe geam este un act de lipsă de considerație și o contravenție specifică de mediu (Environmental Protection Act 1990). Poate fi și o distragere, încadrându-se ca o conducere neglijentă (inconsiderate driving).\nReferință Cod Rutier UK: Environmental Protection Act 1990 (littering). Can also be seen as inconsiderate driving under RTA 1988, Section 3." }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let startTime;
+        let overallTimerInterval;
+        let activeQuizQuestions = [];
+        let incorrectlyAnswered = [];
+        let seenQuestionIdsInSession = new Set(); 
+        let lastNormalQuizQuestionIds = [];
+
+        let studentName = "";
+        let isTimeTrialMode = false;
+        const TIME_TRIAL_QUESTION_DURATION = 20; 
+        let perQuestionTimerInterval;
+        let timeRemainingOnQuestion;
+        let timeWhenPaused_perQuestion; 
+        let timeWhenPaused_overall = 0; 
+        let accumulatedPausedTime_overall = 0; 
+
+
+        let isQuizPaused = false;
+
+        const nameEntrySectionEl = document.getElementById('name-entry-section');
+        const nameInputEl = document.getElementById('name-input');
+        const startQuizButtonEl = document.getElementById('start-quiz-button');
+        const quizMainContainerEl = document.getElementById('quiz-main-container');
+        const quizTitleEl = document.getElementById('quiz-title');
+        const quizPauseOverlayEl = document.getElementById('quiz-pause-overlay');
+
+        const questionEl = document.getElementById('question');
+        const imageEl = document.getElementById('image');
+        const optionsEl = document.getElementById('options');
+        const feedbackEl = document.getElementById('feedback');
+        const statusEl = document.getElementById('status');
+        const nextBtn = document.getElementById('next');
+        const restartBtn = document.getElementById('restart');
+        const generalRecapEl = document.getElementById('general-recap');
+        const incorrectAnswersReviewEl = document.getElementById('incorrect-answers-review');
+        const questionProgressEl = document.getElementById('question-progress');
+        const progressBarFillEl = document.getElementById('progress-bar-fill'); // Element nou
+        const timeTrialProposalEl = document.getElementById('time-trial-proposal');
+        const acceptTimeTrialBtnEl = document.getElementById('accept-time-trial');
+        const declineTimeTrialBtnEl = document.getElementById('decline-time-trial');
+        const questionTimerDisplayEl = document.getElementById('question-timer-display');
+        const inQuizControlsEl = document.getElementById('in-quiz-controls');
+        const pauseResumeBtnEl = document.getElementById('pause-resume-btn');
+        const stopQuizBtnEl = document.getElementById('stop-quiz-btn');
+        const stopConfirmModalOverlayEl = document.getElementById('stop-confirm-modal-overlay');
+        const confirmStopBtnEl = document.getElementById('confirm-stop-btn');
+        const cancelStopBtnEl = document.getElementById('cancel-stop-btn');
+
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function selectNewQuestions() {
+            let questionsToFilter = [...allQuestions];
+            let availableQuestions;
+
+            if (isTimeTrialMode) {
+                availableQuestions = questionsToFilter.filter(q => !lastNormalQuizQuestionIds.includes(q.id));
+                if (availableQuestions.length < 10) { 
+                    let potentialFallback = questionsToFilter.filter(q => !seenQuestionIdsInSession.has(q.id) || !lastNormalQuizQuestionIds.includes(q.id));
+                    if (potentialFallback.length < 10) potentialFallback = questionsToFilter; 
+                    availableQuestions = potentialFallback;
+                }
+            } else {
+                availableQuestions = questionsToFilter.filter(q => !seenQuestionIdsInSession.has(q.id));
+                if (availableQuestions.length < 10) {
+                    seenQuestionIdsInSession.clear(); 
+                    availableQuestions = questionsToFilter;
+                }
+            }
+            
+            shuffleArray(availableQuestions);
+            activeQuizQuestions = availableQuestions.slice(0, 10);
+
+            if (!isTimeTrialMode) {
+                lastNormalQuizQuestionIds = activeQuizQuestions.map(q => q.id); 
+                activeQuizQuestions.forEach(q => seenQuestionIdsInSession.add(q.id));
+            }
+        }
+
+        function startOverallTimer() {
+            startTime = Date.now(); 
+            accumulatedPausedTime_overall = 0; 
+            timeWhenPaused_overall = 0; 
+            updateStatusDisplay(); 
+            overallTimerInterval = setInterval(updateStatusDisplay, 1000);
+        }
+
+        function stopOverallTimer() {
+            clearInterval(overallTimerInterval);
+            overallTimerInterval = null;
+        }
+        
+        function updateProgressBar() {
+            const progress = (currentQuestionIndex / activeQuizQuestions.length) * 100;
+            progressBarFillEl.style.width = `${progress}%`;
+        }
+
+        function prepareNewQuizAttempt() {
+            selectNewQuestions(); 
+            currentQuestionIndex = 0;
+            score = 0;
+            incorrectlyAnswered = [];
+            isQuizPaused = false; 
+            quizPauseOverlayEl.style.display = 'none';
+            pauseResumeBtnEl.textContent = "Pauză Timer";
+            pauseResumeBtnEl.style.backgroundColor = '#f39c12'; 
+            
+            feedbackEl.style.display = 'none';
+            generalRecapEl.style.display = 'none';
+            incorrectAnswersReviewEl.style.display = 'none';
+            timeTrialProposalEl.style.display = 'none';
+            nextBtn.style.display = 'none';
+            restartBtn.style.display = 'none';
+            inQuizControlsEl.style.display = 'flex'; 
+
+            questionEl.style.display = 'block';
+            imageEl.style.display = 'block';
+            optionsEl.style.display = 'block';
+            questionProgressEl.style.display = 'block';
+            quizTitleEl.textContent = isTimeTrialMode ? `Provocare Contratimp - ${studentName}` : `Condu Sau Pierzi! - ${studentName}`;
+            updateProgressBar(); // Inițializare bară de progres
+
+            if (isTimeTrialMode) {
+                questionTimerDisplayEl.style.display = 'block';
+            } else {
+                questionTimerDisplayEl.style.display = 'none';
+                stopPerQuestionTimer(); 
+            }
+            loadQuestion();
+            toggleAllInteractions(false); 
+        }
+
+
+        function loadQuestion() {
+            feedbackEl.style.display = 'none';
+            nextBtn.style.display = 'none';
+            optionsEl.innerHTML = ''; 
+
+            const q = activeQuizQuestions[currentQuestionIndex];
+            questionProgressEl.textContent = `Întrebarea ${currentQuestionIndex + 1} din ${activeQuizQuestions.length}`;
+            questionEl.textContent = q.question;
+            imageEl.innerHTML = `<img src="${q.image}" alt="Imagine pentru întrebarea: ${q.question.substring(0,30)}..." onerror="this.onerror=null; this.src='https://placehold.co/600x300/e0e0e0/757575?text=Imagine+Indisponibilă'; this.alt='Imagine indisponibilă';">`;
+            updateProgressBar(); // Actualizare bară de progres la fiecare întrebare nouă
+
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.innerHTML = `<span>${opt}</span> <span class="answer-icon"></span>`; // Spațiu pentru iconiță
+                btn.onclick = () => handleAnswer(idx, q.answer, q, btn);
+                optionsEl.appendChild(btn);
+            });
+
+            if (isQuizPaused) { 
+                 toggleAllInteractions(true);
+            } else if (isTimeTrialMode) {
+                startPerQuestionTimer();
+            }
+        }
+
+        function updateStatusDisplay() {
+            if (!startTime || isQuizPaused) return; 
+            
+            const now = Date.now();
+            const totalElapsed = Math.floor(( (now - startTime) - accumulatedPausedTime_overall ) / 1000);
+
+            const modePrefix = isTimeTrialMode ? "Contratimp: " : "";
+            statusEl.textContent = `${modePrefix}Scor: ${score}/${activeQuizQuestions.length} | Timp: ${totalElapsed}s`;
+        }
+
+        function startPerQuestionTimer(resumeTime = TIME_TRIAL_QUESTION_DURATION) {
+            if (isQuizPaused) return;
+            stopPerQuestionTimer(); 
+            timeRemainingOnQuestion = resumeTime; 
+            questionTimerDisplayEl.textContent = `Timp rămas: ${timeRemainingOnQuestion}s`;
+            questionTimerDisplayEl.style.color = '#e67e22'; 
+
+            perQuestionTimerInterval = setInterval(() => {
+                if (isQuizPaused) return; 
+
+                timeRemainingOnQuestion--;
+                questionTimerDisplayEl.textContent = `Timp rămas: ${timeRemainingOnQuestion}s`;
+                if (timeRemainingOnQuestion <= 5 && timeRemainingOnQuestion > 0) {
+                    questionTimerDisplayEl.style.color = 'red'; 
+                } else if (timeRemainingOnQuestion <= 0) {
+                    questionTimerDisplayEl.textContent = "Timpul a expirat!";
+                    questionTimerDisplayEl.style.color = 'red';
+                    stopPerQuestionTimer();
+                    handleAnswer(-1, activeQuizQuestions[currentQuestionIndex].answer, activeQuizQuestions[currentQuestionIndex], null); 
+                }
+            }, 1000);
+        }
+
+        function stopPerQuestionTimer() {
+            clearInterval(perQuestionTimerInterval);
+            perQuestionTimerInterval = null;
+        }
+
+        function handleAnswer(selectedIndex, correctIndex, questionObject, selectedButton) {
+            if (isQuizPaused) return; 
+
+            if (isTimeTrialMode) {
+                timeWhenPaused_perQuestion = timeRemainingOnQuestion; 
+                stopPerQuestionTimer();
+            }
+            const buttons = optionsEl.querySelectorAll('button');
+            buttons.forEach(btn => btn.disabled = true); 
+
+            feedbackEl.style.display = 'block';
+            const iconSpan = selectedButton ? selectedButton.querySelector('.answer-icon') : null;
+
+            if (selectedIndex === -1) { 
+                feedbackEl.textContent = "⏰ Timpul a expirat!\n" + questionObject.explanation;
+                feedbackEl.className = 'feedback incorrect';
+                if (buttons[correctIndex]) {
+                    buttons[correctIndex].classList.add('correct');
+                    buttons[correctIndex].querySelector('.answer-icon').textContent = '✓';
+                }
+                
+                incorrectlyAnswered.push({
+                    questionText: questionObject.question,
+                    userAnswer: "Timpul a expirat",
+                    correctAnswer: questionObject.options[correctIndex],
+                    explanation: questionObject.explanation,
+                    image: questionObject.image
+                });
+            } else if (selectedIndex === correctIndex) {
+                score++;
+                selectedButton.classList.add('correct');
+                if (iconSpan) iconSpan.textContent = '✓';
+                feedbackEl.textContent = "✅ Corect!\n" + questionObject.explanation;
+                feedbackEl.className = 'feedback correct';
+            } else {
+                selectedButton.classList.add('incorrect');
+                if (iconSpan) iconSpan.textContent = '✗';
+                if (buttons[correctIndex]) {
+                     buttons[correctIndex].classList.add('correct');
+                     buttons[correctIndex].querySelector('.answer-icon').textContent = '✓';
+                }
+                feedbackEl.textContent = "❌ Greșit.\n" + questionObject.explanation;
+                feedbackEl.className = 'feedback incorrect';
+                incorrectlyAnswered.push({
+                    questionText: questionObject.question,
+                    userAnswer: questionObject.options[selectedIndex],
+                    correctAnswer: questionObject.options[correctIndex],
+                    explanation: questionObject.explanation,
+                    image: questionObject.image
+                });
+            }
+
+            updateStatusDisplay(); 
+            nextBtn.style.display = 'inline-block'; 
+            if (currentQuestionIndex === activeQuizQuestions.length - 1) {
+                nextBtn.textContent = 'Vezi Rezultatul';
+            } else {
+                 nextBtn.textContent = 'Următoarea Întrebare';
+            }
+        }
+
+        function nextQuestionFlow() {
+            if (isQuizPaused) return;
+            currentQuestionIndex++;
+            if (currentQuestionIndex < activeQuizQuestions.length) {
+                loadQuestion();
+            } else {
+                showFinalScore();
+            }
+        }
+        
+        function toggleAllInteractions(disable) {
+            const optionButtons = optionsEl.querySelectorAll('button');
+            optionButtons.forEach(btn => {
+                if (disable || feedbackEl.style.display === 'none') {
+                    btn.disabled = disable;
+                }
+            });
+            if (nextBtn) {
+                if (nextBtn.style.display === 'inline-block') {
+                    nextBtn.disabled = disable;
+                }
+            }
+        }
+
+
+        function handlePauseResumeClick() {
+            if (isQuizPaused) { // RESUME
+                isQuizPaused = false;
+                quizPauseOverlayEl.style.display = 'none';
+                pauseResumeBtnEl.textContent = "Pauză Timer";
+                pauseResumeBtnEl.style.backgroundColor = '#f39c12'; 
+                toggleAllInteractions(false);
+
+                if (timeWhenPaused_overall) { 
+                    accumulatedPausedTime_overall += (Date.now() - timeWhenPaused_overall);
+                    timeWhenPaused_overall = 0; 
+                }
+                if (!overallTimerInterval) { 
+                    overallTimerInterval = setInterval(updateStatusDisplay, 1000);
+                }
+                
+                if (isTimeTrialMode && perQuestionTimerInterval === null) { 
+                    startPerQuestionTimer(timeWhenPaused_perQuestion); 
+                }
+            } else { // PAUSE
+                isQuizPaused = true;
+                quizPauseOverlayEl.style.display = 'flex';
+                pauseResumeBtnEl.textContent = "Reluare Timer";
+                pauseResumeBtnEl.style.backgroundColor = '#2ecc71'; 
+                toggleAllInteractions(true);
+
+                stopOverallTimer(); 
+                timeWhenPaused_overall = Date.now(); 
+
+
+                if (isTimeTrialMode && perQuestionTimerInterval !== null) { 
+                    timeWhenPaused_perQuestion = timeRemainingOnQuestion; 
+                    stopPerQuestionTimer();
+                }
+            }
+        }
+
+
+        function handleStopQuizClick() {
+            if (isQuizPaused) { // Dacă e pauză, reluăm întâi pentru a opri corect timerele
+                handlePauseResumeClick(); // Reluare
+            }
+            stopConfirmModalOverlayEl.style.display = 'flex'; // Afișează modalul custom
+            // Logica de oprire efectivă este mutată în event listener-ul butonului de confirmare al modalului
+        }
+        
+        function executeStopQuiz() {
+            stopOverallTimer();
+            stopPerQuestionTimer();
+            
+            isTimeTrialMode = false; 
+            isQuizPaused = false; 
+            studentName = "";
+            score = 0;
+            currentQuestionIndex = 0;
+            activeQuizQuestions = [];
+            incorrectlyAnswered = [];
+            seenQuestionIdsInSession.clear();
+            lastNormalQuizQuestionIds = [];
+            accumulatedPausedTime_overall = 0;
+            timeWhenPaused_overall = 0;
+
+            quizPauseOverlayEl.style.display = 'none';
+            pauseResumeBtnEl.textContent = "Pauză Timer";
+            pauseResumeBtnEl.style.backgroundColor = '#f39c12';
+            
+            initializeApp(); 
+        }
+
+
+        function showFinalScore() {
+            stopOverallTimer();
+            if(isTimeTrialMode) stopPerQuestionTimer();
+            inQuizControlsEl.style.display = 'none'; 
+            progressBarFillEl.style.width = '100%'; // Bară de progres plină la final
+
+            const elapsed = Math.floor(((Date.now() - startTime) - accumulatedPausedTime_overall) / 1000);
+            
+            questionEl.style.display = 'none';
+            imageEl.style.display = 'none';
+            optionsEl.style.display = 'none';
+            questionProgressEl.style.display = 'none';
+            questionTimerDisplayEl.style.display = 'none';
+            
+            feedbackEl.style.display = 'block';
+            feedbackEl.className = 'feedback'; 
+
+            const percentage = Math.round((score / activeQuizQuestions.length) * 100);
+            let resultMessage = "";
+            
+            if (percentage >= 70) { 
+                resultMessage = `Felicitări, ${studentName}! Ai promovat!`;
+                feedbackEl.innerHTML = `<img src="https://placehold.co/150x100/4CAF50/FFFFFF?text=Promovat%21" alt="Promovat">` +
+                                     `Scor final: ${score}/${activeQuizQuestions.length} (${percentage}%)\n` +
+                                     `Timp total: ${elapsed} secunde\n${resultMessage}`;
+                if (!isTimeTrialMode) {
+                    timeTrialProposalEl.style.display = 'block'; 
+                    restartBtn.style.display = 'none'; 
+                } else {
+                    feedbackEl.innerHTML += `<br>Ai completat provocarea contratimp cu succes!`;
+                    timeTrialProposalEl.style.display = 'none';
+                    restartBtn.textContent = "Reîncepe Testul Normal";
+                    restartBtn.style.display = 'inline-block'; 
+                    isTimeTrialMode = false; 
+                }
+                generalRecapEl.style.display = 'none'; 
+                incorrectAnswersReviewEl.style.display = 'none';
+            } else { 
+                resultMessage = `Din păcate, ${studentName}, nu ai atins pragul de 70%.`;
+                feedbackEl.innerHTML = `<img src="https://placehold.co/150x100/F44336/FFFFFF?text=Respins" alt="Respins">` +
+                                     `Scor final: ${score}/${activeQuizQuestions.length} (${percentage}%)\n` +
+                                     `Timp total: ${elapsed} secunde\n${resultMessage}`;
+                if (isTimeTrialMode) {
+                    feedbackEl.innerHTML += `<br>Provocarea contratimp nu a fost îndeplinită.`;
+                    isTimeTrialMode = false; 
+                } else {
+                     feedbackEl.innerHTML += `\n\nMai jos găsești o recapitulare și întrebările la care ai greșit:`;
+                     generalRecapEl.style.display = 'block'; 
+                     displayIncorrectAnswers();
+                }
+                timeTrialProposalEl.style.display = 'none';
+                restartBtn.textContent = "Reîncepe Testul";
+                restartBtn.style.display = 'inline-block'; 
+            }
+            
+            nextBtn.style.display = 'none';
+        }
+
+        function displayIncorrectAnswers() {
+            incorrectAnswersReviewEl.innerHTML = '<h3>Revizuirea Răspunsurilor Greșite</h3>'; 
+            if (incorrectlyAnswered.length === 0 && !isTimeTrialMode) { 
+                incorrectAnswersReviewEl.innerHTML += "<p>Felicitări, nu ai greșit nicio întrebare la această încercare!</p>";
+            } else if (incorrectlyAnswered.length === 0 && isTimeTrialMode) {
+                // No specific message
+            }
+
+            incorrectlyAnswered.forEach(item => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'incorrect-answer-review-item';
+                itemDiv.innerHTML = `
+                    <div class="image" style="margin-bottom: 0.5em;"><img src="${item.image}" alt="Imagine întrebare" style="max-height:150px;"></div>
+                    <p><strong>Întrebarea:</strong> ${item.questionText}</p>
+                    <p style="color: #e74c3c;"><strong>Răspunsul tău:</strong> ${item.userAnswer}</p>
+                    <p style="color: #2ecc71;"><strong>Răspunsul corect:</strong> ${item.correctAnswer}</p>
+                    <p><strong>Explicație detaliată:</strong><br>${item.explanation.replace(/\n/g, '<br>')}</p>
+                `;
+                incorrectAnswersReviewEl.appendChild(itemDiv);
+            });
+            incorrectAnswersReviewEl.style.display = incorrectlyAnswered.length > 0 ? 'block' : 'none';
+        }
+
+        function initializeApp() {
+            quizMainContainerEl.style.display = 'none';
+            inQuizControlsEl.style.display = 'none';
+            nameEntrySectionEl.style.display = 'block'; 
+            timeTrialProposalEl.style.display = 'none';
+            questionTimerDisplayEl.style.display = 'none';
+            feedbackEl.style.display = 'none';
+            generalRecapEl.style.display = 'none';
+            incorrectAnswersReviewEl.style.display = 'none';
+            stopConfirmModalOverlayEl.style.display = 'none';
+            if(nameInputEl) nameInputEl.value = ""; 
+            if(statusEl) statusEl.textContent = "Scor: 0 | Timp: 0s"; 
+            if(progressBarFillEl) progressBarFillEl.style.width = '0%';
+        }
+
+        function submitNameAndStart() {
+            studentName = nameInputEl.value.trim();
+            if (!studentName) {
+                studentName = "Cursant"; 
+            }
+            nameEntrySectionEl.style.display = 'none';
+            quizMainContainerEl.style.display = 'block';
+            isTimeTrialMode = false; 
+            fullRestartQuizFlow(); 
+        }
+        
+        function acceptTimeTrialChallenge() {
+            timeTrialProposalEl.style.display = 'none';
+            isTimeTrialMode = true;
+            prepareNewQuizAttempt(); 
+            startOverallTimer(); 
+        }
+
+        function declineTimeTrialChallenge() {
+            timeTrialProposalEl.style.display = 'none';
+            isTimeTrialMode = false; 
+            fullRestartQuizFlow();
+        }
+
+        function fullRestartQuizFlow() { 
+            prepareNewQuizAttempt();
+            startOverallTimer();
+        }
+
+        // Add event listeners
+        startQuizButtonEl.addEventListener('click', submitNameAndStart);
+        acceptTimeTrialBtnEl.addEventListener('click', acceptTimeTrialChallenge);
+        declineTimeTrialBtnEl.addEventListener('click', declineTimeTrialChallenge);
+        nextBtn.addEventListener('click', nextQuestionFlow);
+        restartBtn.addEventListener('click', () => {
+            isTimeTrialMode = false; 
+            fullRestartQuizFlow();
+        });
+        pauseResumeBtnEl.addEventListener('click', handlePauseResumeClick);
+        stopQuizBtnEl.addEventListener('click', handleStopQuizClick);
+        confirmStopBtnEl.addEventListener('click', () => {
+            stopConfirmModalOverlayEl.style.display = 'none';
+            executeStopQuiz();
+        });
+        cancelStopBtnEl.addEventListener('click', () => {
+            stopConfirmModalOverlayEl.style.display = 'none';
+             if (isQuizPaused) { // If it was paused before stop was clicked, re-pause
+                // No, don't re-pause. The user cancelled stopping.
+                // If they were paused, they should click resume.
+                // Or, if they weren't paused, the quiz continues.
+                // The issue is if they click "stop" while timers are running, then cancel.
+                // We need to ensure timers resume if they were running.
+                // The current pause/resume logic should handle this if we don't force a pause here.
+            }
+        });
+
+
+        // Start the app
+        initializeApp();
+    </script>
 </body>
 </html>
